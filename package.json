@@ -17,7 +17,7 @@
     "rest",
     "json"
   ],
-  "author": "David Mudrák <david@moodle.com>",
+  "author": "Sergio <sergio@ishtar.io>",
   "license": "BSD-2-Clause",
   "bugs": {
     "url": "https://github.com/ishtartec/node-moodle-client/issues"
