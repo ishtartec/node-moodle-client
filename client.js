@@ -79,7 +79,7 @@ function client(options) {
         self.host.rejectUnauthorized = options.rejectUnauthorized;
         self.logger.warn("[init] accepting self signed certificates");
     } else {
-        self.host.rejectUnauthorized = false;
+        self.host.rejectUnauthorized = true;
     }
 }
 
