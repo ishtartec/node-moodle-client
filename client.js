@@ -28,6 +28,7 @@ module.exports = {
  * {winston.Logger} [logger] - The logger to use, defaults to a dummy non-logger.
  * {string} [service=moodle_mobile_app] - The web service to use.
  * {string} [token] - The access token to use.
+ * {boolean} rejectUnauthorized - Accept self signed certificates for https
  *
  * @constructor
  * @param {object} options - Client initialization options.
@@ -72,6 +73,13 @@ function client(options) {
 
     if ("token" in options) {
         self.token = options.token;
+    }
+
+    if ("rejectUnauthorized" in options) {
+        self.host.rejectUnauthorized = options.rejectUnauthorized;
+        self.logger.warn("[init] accepting self signed certificates");
+    } else {
+        self.host.rejectUnauthorized = false;
     }
 }
 
@@ -143,7 +151,7 @@ client.prototype.authenticate = function (options, callback) {
         headers: {
             "Content-Type": "application/x-www-form-urlencoded"
         },
-        rejectUnauthorized: false
+        rejectUnauthorized: self.host.rejectUnauthorized
     };
 
     var request = self.protocol.request(options, function(response) {
@@ -285,7 +293,7 @@ client.prototype.call = function (options, callback) {
                 "Content-Type": "application/x-www-form-urlencoded",
                 "Content-Length": query.length
             },
-            rejectUnauthorized: false
+            rejectUnauthorized: self.host.rejectUnauthorized
         };
 
         var request = self.protocol.request(options, function(response) {
@@ -314,7 +322,7 @@ client.prototype.call = function (options, callback) {
             hostname: self.host.hostname,
             port: self.host.port,
             path: self.host.pathname + "/webservice/rest/server.php?" + query,
-            rejectUnauthorized: false
+            rejectUnauthorized: self.host.rejectUnauthorized
         };
 
         self.protocol.get(options, function(response) {

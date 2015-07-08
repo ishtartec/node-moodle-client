@@ -9,22 +9,33 @@ node.js client for [moodle](https://moodle.org/) web services API
 
 ## Installation
 
-    $ npm install moodle-client
+    $ npm install moodle-client-2
 
 ## Usage
 
 Call the `create()` function provided by the module to get a new instance of the client.
 
-    const client = require("moodle-client");
+    const client = require("moodle-client-2");
 
     var c = client.create({
         wwwroot: "http://localhost/moodle/",
         token: "d457b5e5b0cc31c05ccf38628e4dfc14"
     });
 
+The https protocol is supported and recommended. If you are using a self signed certificate, you should specify in the settings with the `rejectUnathorized: true` parameter.
+
+    const client = require("moodle-client-2");
+
+    var c = client.create({
+        wwwroot: "https://localhost/moodle/",
+        token: "d457b5e5b0cc31c05ccf38628e4dfc14",
+        rejectUnauthorized: true
+    });
+
+
 Alternatively, to obtain the token for the given username and password, use the `authenticate()` method.
 
-    const client = require("moodle-client");
+    const client = require("moodle-client-2");
 
     var c = client.create({
         wwwroot: "http://localhost/moodle/"
@@ -41,7 +52,7 @@ Alternatively, to obtain the token for the given username and password, use the 
 
 Use the `call()` method to execute a web service function at the remote moodle site.
 
-    const client = require("moodle-client");
+    const client = require("moodle-client-2");
 
     var c = client.create({
         wwwroot: "http://localhost/moodle/",
@@ -56,7 +67,7 @@ Use the `call()` method to execute a web service function at the remote moodle s
 
 To debug and log the client functionality, install and use the winston logger.
 
-    const client = require("moodle-client");
+    const client = require("moodle-client-2");
     const logger = require("winston");
 
     logger.level = "debug";
@@ -123,6 +134,7 @@ The `call()` method is chainable, allowing synchronous execution of multiple web
 
 ## Changes
 
+* 0.2.1 - Added support for self signed certificates
 * 0.2.0 - The initialization and API/signatures improved (#1). Added ability to authenticate by explicitly provided token (#3).
           Added tests.
 * 0.1.0 - Initial release. The API should not be considered stable yet (as the [version number](http://semver.org/) suggests).
