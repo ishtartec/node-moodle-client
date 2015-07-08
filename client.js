@@ -11,12 +11,13 @@ const http = require("http");
 const https = require("https");
 const querystring = require("querystring");
 const concat = require("concat-stream");
+const Qs = require('qs');
 
 module.exports = {
     create: function (options) {
         return new client(options);
     }
-}
+};
 
 /**
  * Represents a moodle API client.
@@ -136,13 +137,14 @@ client.prototype.authenticate = function (options, callback) {
         hostname: self.host.hostname,
         port: self.host.port,
         method: "POST",
-        path: self.host.pathname + "/login/token.php?" + querystring.stringify({
+        path: self.host.pathname + "/login/token.php?" + Qs.stringify({
             service: self.service
         }),
         headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-        }
-    }
+            "Content-Type": "application/x-www-form-urlencoded"
+        },
+        rejectUnauthorized: false
+    };
 
     var request = self.protocol.request(options, function(response) {
 
@@ -180,7 +182,7 @@ client.prototype.authenticate = function (options, callback) {
         return callback(e);
     });
 
-    request.write(querystring.stringify({username: self.username, password: self.password}));
+    request.write(Qs.stringify({username: self.username, password: self.password}));
     request.end();
 };
 
@@ -211,6 +213,7 @@ client.prototype.call = function (options, callback) {
     var wsfunction;
     var arguments = {};
     var settings = {};
+
 
     if ("wsfunction" in options) {
         wsfunction = options.wsfunction;
@@ -256,9 +259,10 @@ client.prototype.call = function (options, callback) {
         query.moodlewssettingfilter = settings.filter;
     }
 
-    query = querystring.stringify(query);
+    query = Qs.stringify(query);
 
     if ("method" in settings) {
+        self.protocol.METHODS = ["GET", "POST"];
         if (!(settings.method === "GET" || settings.method === "POST")
                 || self.protocol.METHODS.indexOf(settings.method) == -1) {
             self.logger.error("[call] requested method not supported (only GET and POST supported)");
@@ -276,12 +280,13 @@ client.prototype.call = function (options, callback) {
             hostname: self.host.hostname,
             port: self.host.port,
             method: "POST",
-            path: self.host.pathname + "/webservice/rest/server.php?" + querystring.stringify({wsfunction: wsfunction}),
+            path: self.host.pathname + "/webservice/rest/server.php?" + Qs.stringify({wsfunction: wsfunction}),
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded",
                 "Content-Length": query.length
-            }
-        }
+            },
+            rejectUnauthorized: false
+        };
 
         var request = self.protocol.request(options, function(response) {
 
@@ -308,8 +313,9 @@ client.prototype.call = function (options, callback) {
         var options = {
             hostname: self.host.hostname,
             port: self.host.port,
-            path: self.host.pathname + "/webservice/rest/server.php?" + query
-        }
+            path: self.host.pathname + "/webservice/rest/server.php?" + query,
+            rejectUnauthorized: false
+        };
 
         self.protocol.get(options, function(response) {
 
